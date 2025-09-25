@@ -4,9 +4,6 @@ node_modules/
 # Environment variables
 .env
 
-# Database dumps
-database_dump/
-
 # Logs
 logs
 *.log
