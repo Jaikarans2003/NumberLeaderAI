@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Valuation Report Generator - Number Leader</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Latest versions of jsPDF and html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Valuation Report Generator</h1>
+        <p class="tagline">Generate a comprehensive valuation report for your company</p>
+        
+        <div class="form-section">
+            <h2>Company Information</h2>
+            <input type="text" id="companyName" placeholder="Company Name" required />
+            <textarea id="companyDescription" placeholder="Company Description (business model, market position, etc.)" required></textarea>
+            
+            <h2>Valuation Metrics</h2>
+            <div class="valuation-inputs">
+                <div class="input-group">
+                    <label for="dcf">Discounted Cash Flow (DCF) Value</label>
+                    <input type="text" id="dcf" placeholder="e.g. $10.5 million" required />
+                </div>
+                
+                <div class="input-group">
+                    <label for="cca">Comparable Company Analysis (CCA) Value</label>
+                    <input type="text" id="cca" placeholder="e.g. $9.8 million" required />
+                </div>
+                
+                <div class="input-group">
+                    <label for="ptm">Precedent Transaction Method (PTM) Value</label>
+                    <input type="text" id="ptm" placeholder="e.g. $11.2 million" required />
+                </div>
+                
+                <div class="input-group">
+                    <label for="abv">Asset-Based Valuation (ABV) Value</label>
+                    <input type="text" id="abv" placeholder="e.g. $9.5 million" required />
+                </div>
+            </div>
+            
+            <button id="generateBtn">Generate Professional Report</button>
+        </div>
+
+        <!-- Report Output -->
+        <div id="reportOutput">
+            <div id="report-content" style="display: none;"></div>
+        </div>
+
+        <!-- Download PDF Button -->
+        <button id="downloadPdfBtn" style="display: none;">Download PDF Report</button>
+        
+        <footer>
+            <p>© 2025 Number Leader, Created by JaiKaran S. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
