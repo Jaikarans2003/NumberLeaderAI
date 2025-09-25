@@ -1,0 +1,18 @@
+### Get API Documentation
+GET http://localhost:5000/
+
+### Check API Health
+GET http://localhost:5000/api-health
+
+### Generate Valuation Report
+POST http://localhost:5000/generate-report
+Content-Type: application/json
+
+{
+  "companyName": "Example Corp",
+  "companyDescription": "Example Corp is a technology company specializing in AI solutions for the healthcare industry. Founded in 2018, the company has developed proprietary algorithms that improve diagnostic accuracy by 40% while reducing costs.",
+  "dcf": "$5,000,000",
+  "cca": "$4,800,000",
+  "ptm": "$5,200,000",
+  "abv": "$4,500,000"
+} 
