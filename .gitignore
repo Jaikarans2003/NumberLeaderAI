@@ -7,11 +7,11 @@ node_modules/
 # Logs
 logs
 *.log
-npm-debug.log*
+npm-debug.log*  
 
 # Runtime data
 pids
-*.pid
+*.pids
 *.seed
 *.pid.lock
 

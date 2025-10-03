@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valuation Report Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Valuation Report Generator</h1>
+        <form id="reportForm">
+            <h2>1. Company Information</h2>
+            <div class="form-group">
+                <label for="company_name">Company Name:</label>
+                <input type="text" id="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="incorporation_date">Incorporation Date:</label>
+                <input type="date" id="incorporation_date" required>
+            </div>
+            <div class="form-group">
+                <label for="business_description">Business Description:</label>
+                <textarea id="business_description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="company_status">Company Status:</label>
+                <input type="text" id="company_status" placeholder="e.g., Private / Unlisted" required>
+            </div>
+            <div class="form-group">
+                <label for="registered_office">Registered Office:</label>
+                <input type="text" id="registered_office" required>
+            </div>
+
+            <h2>2. Valuation Methodologies</h2>
+            <div id="methodologies">
+                <div class="methodology">
+                    <div class="form-group">
+                        <label>Method Name:</label>
+                        <input type="text" class="method_name" placeholder="e.g., DCF" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <input type="text" class="description" placeholder="Short explanation of the method" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Valuation Amount:</label>
+                        <input type="number" class="valuation_amount" placeholder="e.g., 1048000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Currency:</label>
+                        <input type="text" class="currency" placeholder="e.g., INR" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="addMethodology">Add Another Method</button>
+
+            <h2>3. DCF Assumptions (Optional)</h2>
+            <div class="form-group">
+                <label for="wacc">WACC:</label>
+                <input type="text" id="wacc" placeholder="e.g., 27.04%">
+            </div>
+            <div class="form-group">
+                <label for="long_term_growth_rate">Long-Term Growth Rate:</label>
+                <input type="text" id="long_term_growth_rate" placeholder="e.g., 4%">
+            </div>
+            <div class="form-group">
+                <label for="tax_rate">Tax Rate:</label>
+                <input type="text" id="tax_rate" placeholder="e.g., 25.17%">
+            </div>
+            <div class="form-group">
+                <label for="risk_free_rate">Risk-Free Rate:</label>
+                <input type="text" id="risk_free_rate" placeholder="e.g., 6.76%">
+            </div>
+            <div class="form-group">
+                <label for="equity_cost">Equity Cost:</label>
+                <input type="text" id="equity_cost" placeholder="e.g., 71.93%">
+            </div>
+            <div class="form-group">
+                <label for="beta">Beta:</label>
+                <input type="text" id="beta" placeholder="e.g., 1.09">
+            </div>
+
+            <h2>4. Valuation Output</h2>
+            <div class="form-group">
+                <label for="equity_value_pre_money">Equity Value (Pre-Money):</label>
+                <input type="number" id="equity_value_pre_money" required>
+            </div>
+            <div class="form-group">
+                <label for="fair_value_per_share">Fair Value Per Share:</label>
+                <input type="number" id="fair_value_per_share" required>
+            </div>
+            <div class="form-group">
+                <label for="face_value">Face Value:</label>
+                <input type="number" id="face_value" required>
+            </div>
+
+            <button type="submit">Generate Report</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('addMethodology').addEventListener('click', function() {
+            const methodologiesDiv = document.getElementById('methodologies');
+            const newMethodology = document.querySelector('.methodology').cloneNode(true);
+            
+            // Clear input values
+            newMethodology.querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            
+            methodologiesDiv.appendChild(newMethodology);
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Collect valuation methodologies
+            const methodologies = [];
+            document.querySelectorAll('.methodology').forEach(methodology => {
+                methodologies.push({
+                    method_name: methodology.querySelector('.method_name').value,
+                    description: methodology.querySelector('.description').value,
+                    valuation_amount: methodology.querySelector('.valuation_amount').value,
+                    currency: methodology.querySelector('.currency').value
+                });
+            });
+            
+            // Prepare request data
+            const data = {
+                company_name: document.getElementById('company_name').value,
+                incorporation_date: document.getElementById('incorporation_date').value,
+                business_description: document.getElementById('business_description').value,
+                company_status: document.getElementById('company_status').value,
+                registered_office: document.getElementById('registered_office').value,
+                valuation_methodologies: methodologies,
+                dcf_assumptions: {
+                    wacc: document.getElementById('wacc').value,
+                    long_term_growth_rate: document.getElementById('long_term_growth_rate').value,
+                    tax_rate: document.getElementById('tax_rate').value,
+                    risk_free_rate: document.getElementById('risk_free_rate').value,
+                    equity_cost: document.getElementById('equity_cost').value,
+                    beta: document.getElementById('beta').value
+                },
+                valuation_output: {
+                    equity_value_pre_money: document.getElementById('equity_value_pre_money').value,
+                    fair_value_per_share: document.getElementById('fair_value_per_share').value,
+                    face_value: document.getElementById('face_value').value
+                }
+            };
+            
+            try {
+                const response = await fetch('/generate-valuation-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                // Display the result
+                const resultDiv = document.getElementById('result');
+                resultDiv.textContent = result.report;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while generating the report.');
+            }
+        });
+    </script>
+</body>
+</html>
