@@ -1,16 +1,21 @@
 # Valuation Report Generator
 
-A professional web application to generate comprehensive company valuation reports using multiple methodologies.
+A professional web application for generating comprehensive company valuation reports using multiple methodologies, now fully standardized for Indian financial conventions.
 
-## Features
+## Key Features
 
-- **Professional Report Generation**: Creates detailed 4-page valuation reports
-- **Multiple Valuation Methods**: Implements four industry-standard valuation methodologies:
+- **Professional Report Generation**: Creates detailed multi-page valuation reports
+- **Indian Financial Formatting**:
+  - All currency values use the Indian Rupee symbol (₹)
+  - Numeric values are formatted in the Indian system (lakhs, crores) with proper comma placement
+  - No references to USD, $, or millions
+  - Decimal points are handled as per Indian conventions
+- **Multiple Valuation Methods**:
   - Discounted Cash Flow (DCF)
   - Comparable Company Analysis (CCA)
   - Price to Metrics (PTM)
   - Asset-Based Valuation (ABV)
-- **Dynamic Content**: Customizes content based on company description and data
+- **Dynamic Content**: Customizes content based on company description and input data
 - **PDF Export**: Generates high-quality, well-formatted PDF documents
 - **Modern UI**: Clean, responsive interface for inputting company data
 - **Smart Recommendations**: AI-powered valuation recommendations
@@ -19,8 +24,8 @@ A professional web application to generate comprehensive company valuation repor
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/valuation-report-generator.git
-   cd valuation-report-generator
+   git clone https://gitlab.com/CortexCraft/internal-projects/numberleader-ai-apis.git
+   cd numberleader-ai-apis
    ```
 
 2. Install dependencies:
@@ -31,7 +36,6 @@ A professional web application to generate comprehensive company valuation repor
 3. Create a `.env` file in the project root and add your API keys:
    ```
    DEEPSEEK_API_KEY=your_api_key_here
-   
    PORT=5000
    ```
 
@@ -47,7 +51,7 @@ A professional web application to generate comprehensive company valuation repor
 
 ## Usage
 
-1. Enter your company information in the form fields:
+1. Enter company information in the form fields:
    - Company Name
    - Company Description
    - Valuation Date
@@ -56,7 +60,7 @@ A professional web application to generate comprehensive company valuation repor
 
 2. Click "Generate Report" to create a customized valuation report
 
-3. Review the multi-page report with all valuation methodologies
+3. Review the multi-page report with all valuation methodologies, formatted in Indian Rupees and numeric system
 
 4. Click "Download PDF" to save the report as a professional PDF document
 
@@ -74,4 +78,4 @@ MIT License
 
 ## Author
 
-Created by Jaikaran S 
+Created by Jaikaran S
