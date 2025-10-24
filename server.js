@@ -461,8 +461,192 @@ async function generateBusinessPlan(businessName, industry, targetMarket, produc
   try {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     
-    // Define sections based on plan format
-    const sections = {
+    // Define industry-specific templates with relevant sections and instructions
+    const industryTemplates = {
+      software: {
+        sections: {
+          comprehensive: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products and Services',
+            '4. Market Analysis',
+            '5. Technology Stack & Development Roadmap',
+            '6. Marketing and Sales Strategy',
+            '7. Organization and Management Team',
+            '8. Financial Plan/Projections',
+            '9. Funding Request (if applicable)',
+            '10. Appendix/Appendices'
+          ],
+          concise: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products and Services',
+            '4. Technology Stack & Development Roadmap',
+            '5. Financial Plan/Projections'
+          ],
+          investor: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Market Analysis',
+            '4. Products and Services',
+            '5. Technology Stack & Development Roadmap',
+            '6. Marketing and Sales Strategy',
+            '7. Organization and Management Team',
+            '8. Financial Plan/Projections',
+            '9. Funding Request',
+            '10. Appendix/Appendices'
+          ]
+        },
+        questions: [
+          "What cloud infrastructure do you use?",
+          "What's your pricing model?",
+          "How will you handle customer support?",
+          "What is your development methodology?",
+          "What are your plans for scaling the application?",
+          "How will you handle data security and privacy?"
+        ],
+        instructions: 'Focus on software development lifecycle, technology stack, scalability, and SaaS metrics. Exclude logistics and supply chain details. Include information on user acquisition costs, customer lifetime value, and churn rates.'
+      },
+      manufacturing: {
+        sections: {
+          comprehensive: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products',
+            '4. Market Analysis',
+            '5. Production Process & Facilities',
+            '6. Supply Chain & Logistics',
+            '7. Marketing and Sales Strategy',
+            '8. Organization and Management Team',
+            '9. Financial Plan/Projections',
+            '10. Funding Request (if applicable)',
+            '11. Appendix/Appendices'
+          ],
+          concise: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products',
+            '4. Production Process & Facilities',
+            '5. Financial Plan/Projections'
+          ],
+          investor: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Market Analysis',
+            '4. Products',
+            '5. Production Process & Facilities',
+            '6. Supply Chain & Logistics',
+            '7. Marketing and Sales Strategy',
+            '8. Organization and Management Team',
+            '9. Financial Plan/Projections',
+            '10. Funding Request',
+            '11. Appendix/Appendices'
+          ]
+        },
+        questions: [
+          "What cloud infrastructure do you use?",
+          "What's your pricing model?",
+          "How will you handle customer support?",
+          "What manufacturing equipment will you need?",
+          "How will you manage your supply chain?",
+          "What quality control processes will you implement?"
+        ],
+        instructions: 'Emphasize production processes, equipment requirements, facility layout, supply chain management, and inventory control. Include details on raw material sourcing, quality control procedures, and production capacity.'
+      },
+      service: {
+        sections: {
+          comprehensive: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Services Offered',
+            '4. Market Analysis',
+            '5. Service Delivery Model',
+            '6. Marketing and Sales Strategy',
+            '7. Organization and Management Team',
+            '8. Financial Plan/Projections',
+            '9. Funding Request (if applicable)',
+            '10. Appendix/Appendices'
+          ],
+          concise: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Services Offered',
+            '4. Service Delivery Model',
+            '5. Financial Plan/Projections'
+          ],
+          investor: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Market Analysis',
+            '4. Services Offered',
+            '5. Service Delivery Model',
+            '6. Marketing and Sales Strategy',
+            '7. Organization and Management Team',
+            '8. Financial Plan/Projections',
+            '9. Funding Request',
+            '10. Appendix/Appendices'
+          ]
+        },
+        questions: [
+          "What cloud infrastructure do you use?",
+          "What's your pricing model?",
+          "How will you handle customer support?",
+          "How will you measure client satisfaction?",
+          "What service level agreements will you offer?",
+          "How will you scale your service delivery?"
+        ],
+        instructions: 'Focus on service delivery processes, client acquisition and retention strategies, and service quality metrics. Exclude logistics and manufacturing details. Include information on client satisfaction metrics and service level agreements.'
+      },
+      retail: {
+        sections: {
+          comprehensive: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products and Merchandising',
+            '4. Market Analysis',
+            '5. Store Location & Layout',
+            '6. Supply Chain & Inventory Management',
+            '7. Marketing and Sales Strategy',
+            '8. Organization and Management Team',
+            '9. Financial Plan/Projections',
+            '10. Funding Request (if applicable)',
+            '11. Appendix/Appendices'
+          ],
+          concise: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Products and Merchandising',
+            '4. Store Location & Layout',
+            '5. Financial Plan/Projections'
+          ],
+          investor: [
+            '1. Executive Summary',
+            '2. Company Description / Overview',
+            '3. Market Analysis',
+            '4. Products and Merchandising',
+            '5. Store Location & Layout',
+            '6. Supply Chain & Inventory Management',
+            '7. Marketing and Sales Strategy',
+            '8. Organization and Management Team',
+            '9. Financial Plan/Projections',
+            '10. Funding Request',
+            '11. Appendix/Appendices'
+          ]
+        },
+        questions: [
+          "What cloud infrastructure do you use?",
+          "What's your pricing model?",
+          "How will you handle customer support?",
+          "How will you manage inventory?",
+          "What is your store layout strategy?",
+          "How will you handle seasonal demand fluctuations?"
+        ],
+        instructions: 'Emphasize store location analysis, merchandising strategy, inventory management, and customer experience. Include details on foot traffic, average transaction value, and seasonal sales fluctuations.'
+      }
+    };
+    
+    // Default sections if industry-specific template is not available
+    const defaultSections = {
       comprehensive: [
         '1. Executive Summary',
         '2. Company Description / Overview',
@@ -494,8 +678,42 @@ async function generateBusinessPlan(businessName, industry, targetMarket, produc
         '9. Appendix/Appendices'
       ]
     };
+    
+    // Normalize industry to lowercase for case-insensitive matching
+    const normalizedIndustry = industry.toLowerCase();
+    
+    // Find the matching industry template or use default
+    let selectedTemplate;
+    let additionalInstructions = '';
+    
+    // Check for industry keywords to match with templates
+    if (normalizedIndustry.includes('software') || normalizedIndustry.includes('tech') || 
+        normalizedIndustry.includes('app') || normalizedIndustry.includes('digital') || 
+        normalizedIndustry.includes('it') || normalizedIndustry.includes('web')) {
+      selectedTemplate = industryTemplates.software;
+      additionalInstructions = selectedTemplate.instructions;
+    } 
+    else if (normalizedIndustry.includes('manufactur') || normalizedIndustry.includes('product') || 
+             normalizedIndustry.includes('factory') || normalizedIndustry.includes('industrial')) {
+      selectedTemplate = industryTemplates.manufacturing;
+      additionalInstructions = selectedTemplate.instructions;
+    }
+    else if (normalizedIndustry.includes('service') || normalizedIndustry.includes('consult') || 
+             normalizedIndustry.includes('agency') || normalizedIndustry.includes('professional')) {
+      selectedTemplate = industryTemplates.service;
+      additionalInstructions = selectedTemplate.instructions;
+    }
+    else if (normalizedIndustry.includes('retail') || normalizedIndustry.includes('shop') || 
+             normalizedIndustry.includes('store') || normalizedIndustry.includes('ecommerce') || 
+             normalizedIndustry.includes('e-commerce')) {
+      selectedTemplate = industryTemplates.retail;
+      additionalInstructions = selectedTemplate.instructions;
+    }
+    
+    // Use the selected template sections or default sections
+    const sections = selectedTemplate ? selectedTemplate.sections : defaultSections;
 
-    // Create the prompt with the user's specific instructions
+    // Create the prompt with the user's specific instructions and industry-specific guidance
     const prompt = `
       Generate a detailed business plan for a business with the following details:
       
@@ -511,6 +729,11 @@ async function generateBusinessPlan(businessName, industry, targetMarket, produc
       Format the business plan in a professional, well-structured manner with clear headings and subheadings.
       Include realistic market data and financial projections based on the industry standards.
       Provide actionable insights and recommendations specific to the business type and industry.
+      
+      ${additionalInstructions}
+      
+      Please address the following industry-specific questions in your business plan:
+      ${selectedTemplate && selectedTemplate.questions ? selectedTemplate.questions.map(q => `- ${q}`).join('\n') : ''}
     `;
 
     // Call Gemini API
