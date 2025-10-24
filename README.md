@@ -31,7 +31,7 @@ A professional web application to generate comprehensive company valuation repor
 3. Create a `.env` file in the project root and add your API keys:
    ```
    DEEPSEEK_API_KEY=your_api_key_here
-   DEEPSEEK_API_KEY=sk-4f839184c2a047a6a3130aa735d9e581
+  
    PORT=5000
    ```
 
