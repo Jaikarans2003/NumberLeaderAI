@@ -456,6 +456,140 @@ app.use(cors({
 }));
 app.use(express.static('public'));
 
+// Function to generate business plan using Gemini API
+async function generateBusinessPlan(businessName, industry, targetMarket, productService, planFormat) {
+  try {
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    
+    // Define sections based on plan format
+    const sections = {
+      comprehensive: [
+        '1. Executive Summary',
+        '2. Company Description / Overview',
+        '3. Products and Services',
+        '4. Market Analysis',
+        '5. Marketing and Sales Strategy',
+        '6. Organization and Management Team',
+        '7. Operating Plan',
+        '8. Financial Plan/Projections',
+        '9. Funding Request (if applicable)',
+        '10. Appendix/Appendices'
+      ],
+      concise: [
+        '1. Executive Summary',
+        '2. Company Description / Overview',
+        '3. Products and Services',
+        '4. Market Analysis',
+        '5. Financial Plan/Projections'
+      ],
+      investor: [
+        '1. Executive Summary',
+        '2. Company Description / Overview',
+        '3. Market Analysis',
+        '4. Products and Services',
+        '5. Marketing and Sales Strategy',
+        '6. Organization and Management Team',
+        '7. Financial Plan/Projections',
+        '8. Funding Request',
+        '9. Appendix/Appendices'
+      ]
+    };
+
+    // Create the prompt with the user's specific instructions
+    const prompt = `
+      Generate a detailed business plan for a business with the following details:
+      
+      Business Name: ${businessName}
+      Industry: ${industry}
+      Target Market: ${targetMarket}
+      Product/Service Description: ${productService}
+      
+      The business plan must include the following sections:
+      
+      ${sections[planFormat].join('\n')}
+      
+      Format the business plan in a professional, well-structured manner with clear headings and subheadings.
+      Include realistic market data and financial projections based on the industry standards.
+      Provide actionable insights and recommendations specific to the business type and industry.
+    `;
+
+    // Call Gemini API
+    const response = await axios.post(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+      {
+        contents: [
+          {
+            parts: [
+              { text: prompt }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 8192,
+          topP: 0.95,
+          topK: 40
+        }
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': GEMINI_API_KEY
+        }
+      }
+    );
+
+    // Extract and return the generated business plan
+    return response.data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error('Error generating business plan:', error.response?.data || error.message);
+    throw new Error('Failed to generate business plan');
+  }
+}
+
+// Business Plan Generation Endpoint
+app.post('/generate-business-plan', async (req, res) => {
+  try {
+    const { businessName, industry, targetMarket, productService, planFormat = 'comprehensive' } = req.body;
+    
+    // Validate required parameters
+    if (!businessName || !industry || !targetMarket || !productService) {
+      return res.status(400).json({ 
+        error: 'Missing required parameters. Please provide businessName, industry, targetMarket, and productService.' 
+      });
+    }
+    
+    // Validate plan format
+    const validFormats = ['comprehensive', 'concise', 'investor'];
+    if (!validFormats.includes(planFormat)) {
+      return res.status(400).json({ 
+        error: `Invalid plan format. Please use one of: ${validFormats.join(', ')}` 
+      });
+    }
+    
+    // Generate business plan
+    const businessPlan = await generateBusinessPlan(
+      businessName, 
+      industry, 
+      targetMarket, 
+      productService, 
+      planFormat
+    );
+    
+    // Return the generated business plan
+    res.json({ 
+      success: true, 
+      businessPlan 
+    });
+  } catch (error) {
+    console.error('Error in /generate-business-plan endpoint:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate business plan', 
+      message: error.message 
+    });
+  }
+});
+
 // API Documentation Route
 app.get('/', (req, res) => {
   res.json({
@@ -481,6 +615,22 @@ app.get('/', (req, res) => {
             page2: "string - Second page content of the report",
             page3: "string - Third page content of the report"
           }
+        }
+      },
+      {
+        path: "/generate-business-plan",
+        method: "POST",
+        description: "Generate a business plan using Gemini AI",
+        parameters: {
+          businessName: "string (required) - The name of the business",
+          industry: "string (required) - The industry of the business",
+          targetMarket: "string (required) - The target market of the business",
+          productService: "string (required) - Description of the product or service",
+          planFormat: "string (optional) - Format of the business plan (comprehensive, concise, or investor). Default is comprehensive."
+        },
+        response: {
+          success: "boolean - Indicates if the request was successful",
+          businessPlan: "string - The generated business plan"
         }
       },
       {
